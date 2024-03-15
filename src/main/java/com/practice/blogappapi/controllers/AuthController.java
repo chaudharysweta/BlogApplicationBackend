@@ -1,12 +1,17 @@
 package com.practice.blogappapi.controllers;
 
+import com.practice.blogappapi.exceptions.ApiException;
 import com.practice.blogappapi.payloads.JwtAuthRequest;
 import com.practice.blogappapi.payloads.JwtAuthResponse;
+import com.practice.blogappapi.payloads.UserDto;
 import com.practice.blogappapi.security.JwtTokenHelper;
+import com.practice.blogappapi.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,25 +32,42 @@ public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest request){
-        this.authenticate(request.getUsername(),request.getPassword());
+    public ResponseEntity<?> createToken(@RequestBody JwtAuthRequest request) {
 
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(request.getUsername());
+            this.authenticate(request.getUsername(), request.getPassword());
 
-        String token = this.jwtTokenHelper.generateToken(userDetails);
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(request.getUsername());
 
-        JwtAuthResponse response=new JwtAuthResponse();
+            String token = this.jwtTokenHelper.generateToken(userDetails);
 
-        response.setToken(token);
+            JwtAuthResponse response = new JwtAuthResponse();
+            response.setToken(token);
 
-        return new ResponseEntity<JwtAuthResponse>(response, HttpStatus.OK);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
     }
 
     private void authenticate(String username, String password) {
-        UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(username,password);
-        this.authenticationManager.authenticate(null);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
 
+        try {
+            this.authenticationManager.authenticate(authenticationToken);
+        }catch (BadCredentialsException e){
+            System.out.println("Invalid Details");
+            throw new ApiException("Invalid username and password");
+        }
+    }
+    //Register New User API
+
+    @PostMapping("/register")
+    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto){
+
+        UserDto registeredUser = this.userService.registerNewUser(userDto);
+
+        return new ResponseEntity<UserDto>(registeredUser,HttpStatus.CREATED);
     }
 }

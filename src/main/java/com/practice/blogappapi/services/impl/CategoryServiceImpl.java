@@ -51,10 +51,20 @@ public class CategoryServiceImpl implements CategoryService {
         return this.modelMapper.map(cat,CategoryDto.class);
     }
 
+
+    //
     @Override
     public List<CategoryDto> getCategories() {
+
+        //get all the category from database through category.Repo interface and store the values in category.
         List<Category>categories = this.categoryRepo.findAll();
         List<CategoryDto> catDtos = categories.stream().map((cat)->this.modelMapper.map(cat,CategoryDto.class)).collect(Collectors.toList());
         return catDtos;
     }
 }
+//categories.stream()-> converts the list of category into stream
+//A stream is a sequence of elements that can be processed in a functional style.
+//map((cat) -> this.modelMapper.map(cat, CategoryDto.class)):
+// Applies the map operation to transform each Category entity into a CategoryDto using the modelMapper.
+//collect(Collectors.toList()): Collects the transformed CategoryDto objects into a new list.
+//The Collectors.toList() collector is used to accumulate the elements of the stream into a new List.

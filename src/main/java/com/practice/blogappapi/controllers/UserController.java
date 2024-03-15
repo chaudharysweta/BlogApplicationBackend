@@ -3,22 +3,30 @@ package com.practice.blogappapi.controllers;
 import com.practice.blogappapi.payloads.ApiResponse;
 import com.practice.blogappapi.payloads.UserDto;
 import com.practice.blogappapi.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    //Field dependency injection
+//    @Autowired
+//    private UserService userService;
+
+   //Constructor dependency injection
+    private final UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+
     //POST-create user
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping ("/")
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
         UserDto createUserDto=this.userService.createUser(userDto);
@@ -31,7 +39,9 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
+    //ADMIN can only handle this
     //DELETE-delete user
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{userId}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable("userId") Integer uid){
          this.userService.deleteUser(uid);

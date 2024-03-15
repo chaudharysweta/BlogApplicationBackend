@@ -3,12 +3,11 @@ package com.practice.blogappapi.controllers;
 import com.practice.blogappapi.payloads.ApiResponse;
 import com.practice.blogappapi.payloads.CategoryDto;
 import com.practice.blogappapi.services.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController

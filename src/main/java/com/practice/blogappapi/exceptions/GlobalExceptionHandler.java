@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestControllerAdvice
+@RestControllerAdvice  //It is used to indicate that the class provides centralized exception handling for the entire application
 public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse>resourceNotFoundExceptionHandler(ResourceNotFoundException ex){
@@ -30,5 +30,11 @@ public class GlobalExceptionHandler {
         });
         return new ResponseEntity<Map<String,String>>(resp,HttpStatus.BAD_REQUEST);
 
+    }
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ApiResponse>handleApiException(ApiException ex){
+        String message = ex.getMessage();
+        ApiResponse apiResponse=new ApiResponse(message,true);
+        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.BAD_REQUEST);
     }
 }

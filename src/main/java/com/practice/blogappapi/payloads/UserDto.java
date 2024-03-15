@@ -1,15 +1,21 @@
 package com.practice.blogappapi.payloads;
 
 
+import com.practice.blogappapi.entities.Role;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.*;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import java.util.HashSet;
+import java.util.Set;
 
 @NoArgsConstructor
 @Getter
 @Setter
+
+//here all the fields are similar to user entity
+//here fields are created which we want to return to user
+//We directly don't interact with Entity for the purpose of creation,updation and deletion
 public class UserDto {
 
     private int id;
@@ -25,4 +31,5 @@ public class UserDto {
     @NotEmpty
     private String about;
 
+    private Set<RoleDto> roles = new HashSet<>();
 }
